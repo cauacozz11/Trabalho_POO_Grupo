@@ -1,0 +1,93 @@
+/* ======== Estilo global ======== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f9fafb, #e6ebf0);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ======== Cabeçalhos ======== */
+h1, h2 {
+    text-align: center;
+    color: #1e3a8a;
+}
+
+h1 {
+    margin-top: 40px;
+    font-size: 2.2rem;
+}
+
+h2 {
+    margin-top: 30px;
+    font-size: 1.6rem;
+}
+
+/* ======== Container ======== */
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px 35px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ======== Lista de Itens ======== */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f1f5f9;
+    border-left: 6px solid #1e40af;
+    margin: 10px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+li:hover {
+    background: #e0e7ff;
+    transform: translateX(4px);
+}
+
+/* ======== Links e Botões ======== */
+a {
+    text-decoration: none;
+    color: #1e40af;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+a:hover {
+    color: #0f172a;
+}
+
+.btn {
+    display: inline-block;
+    background: #1e40af;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+/* ======== Rodapé simples ======== */
+footer {
+    text-align: center;
+    padding: 15px 0;
+    color: #555;
+    font-size: 0.85rem;
+    margin-top: 40px;
+}

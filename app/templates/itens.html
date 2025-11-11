@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Itens da Biblioteca</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>📚 Itens da Biblioteca</h1>
+
+    <h2>Livros</h2>
+    {% if livros %}
+        <ul>
+            {% for livro in livros %}
+                <li>
+                    <strong>{{ livro.titulo }}</strong> — {{ livro.autor }}
+                    <br>
+                    <small>{{ livro.categoria }} | {{ livro.editora }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum livro cadastrado.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Revistas</h2>
+    {% if revistas %}
+        <ul>
+            {% for revista in revistas %}
+                <li>
+                    <strong>{{ revista.titulo }}</strong> — Edição {{ revista.edicao }}
+                    <br>
+                    <small>{{ revista.categoria }} | {{ revista.editora }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhuma revista cadastrada.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('main.index') }}">⬅ Voltar ao Início</a></p>
+</body>
+</html>
