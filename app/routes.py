@@ -15,6 +15,6 @@ def listar_itens():
 def locacao():
     return render_template('locacao.html', clientes=clientes, livros=livros, revistas=revistas)
 
-@bp.route('/clientes')
+@bp.route('/devolucao')
 def devolucao():
     return render_template('devolucao.html', clientes=clientes)

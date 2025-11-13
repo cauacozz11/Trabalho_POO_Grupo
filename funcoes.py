@@ -17,14 +17,27 @@ revistas = []
 clientes.append(Cliente("Eduardo Costa", "12345678901", "47999999999", 1))
 clientes.append(Cliente("Maria Silva", "98765432100", "47988888888", 2))
 clientes.append(Cliente("João Pereira", "11122233344", "47977777777", 3))
+clientes.append(Cliente("Ana Souza", "22233344455", "47966666666", 4))
+clientes.append(Cliente("Carlos Oliveira", "33344455566", "47955555555", 5))
+clientes.append(Cliente("Fernanda Lima", "44455566677", "47944444444", 6))
 
+
+# LIVROS
 livros.append(Livro("Aventura", "O Senhor dos Anéis", "Martins Fontes", "J.R.R. Tolkien"))
 livros.append(Livro("Terror", "It: A Coisa", "Suma", "Stephen King"))
 livros.append(Livro("Fantasia", "Harry Potter e a Pedra Filosofal", "Rocco", "J.K. Rowling"))
+livros.append(Livro("Drama", "A Culpa é das Estrelas", "Intrínseca", "John Green"))
+livros.append(Livro("Ficção Científica", "Duna", "Aleph", "Frank Herbert"))
+livros.append(Livro("Romance", "Orgulho e Preconceito", "Penguin", "Jane Austen"))
 
+
+# REVISTAS
 revistas.append(Revista("Tecnologia", "InfoTech", "Abril", 12))
 revistas.append(Revista("Ciência", "Superinteressante", "Abril", 331))
 revistas.append(Revista("Esportes", "Placar", "Abril", 45))
+revistas.append(Revista("Moda", "Vogue", "Condé Nast", 202))
+revistas.append(Revista("Negócios", "Exame", "Abril", 187))
+revistas.append(Revista("Culinária", "Prazeres da Mesa", "Editora Três", 98))
 
 
 # FUNÇÕES DE CADASTRO

@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Biblioteca Online</title>
+  <meta charset="UTF-8">
+  <title>Biblioteca Online</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='telainicial.css') }}">
 </head>
-<body>
-    <h1>Bem-vindo à Biblioteca</h1>
-    <ul>
-        <li><a href="/clientes">Ver clientes</a></li>
-        <li><a href="/itens">Ver livros e revistas</a></li>
-    </ul>
+<body id="corpo">
+  <div class="container">
+    <header id="menu">
+      <nav>
+        <h1 id="titulo">Biblioteca Univille</h1>
+      </nav>
+    </header>
+    
+    <section id="inicio">
+      <a href="/devolucao" class="botaoInicio">Realizar devoluções de Livros</a>
+      <a href="/itens" class="botaoInicio">Livros e Revistas</a>
+      <a href="/locacao" class="botaoInicio">Realize locações de livros</a>
+    </section>
+
+    <footer id="rodape">
+      <p>Biblioteca Univille - 2025</p>
+    </footer>
+  </div>
 </body>
 </html>

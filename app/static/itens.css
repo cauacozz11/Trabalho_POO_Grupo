@@ -7,47 +7,66 @@
     min-height: 100vh;
 }
 
-#menu {
- background-color: #14532d;
- padding: 10px 20px;
-}
-
-#botaoVoltar {
- display: inline-block;
- background: #22c55e;
- color: white;
- padding: 5px 10px;
- border-radius: 6px;
- text-decoration: none;
- font-size: 0.8rem; 
- transition: background 0.3s;
-
-}
-
-#cabecalhoLivros,
-#cabecalhoRevista {
-    text-align: center;
-    color: #14532d;
-}
-
-#cabecalhoLivros {
-    margin-top: 40px;
-    font-size: 2.2rem;
-}
-
-#cabecalhoRevista {
-    margin-top: 30px;
-    font-size: 1.6rem;
-}
-
 .container {
     width: 90%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 20px auto;
     background: #fff;
     border-radius: 12px;
     padding: 25px 35px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+/* ====== MENU SUPERIOR ====== */
+#menu {
+    background-color: #14532d;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.menu-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#titulo {
+    color: white;
+    text-align: center;
+    font-style: italic;
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* ====== BOTÃO DE VOLTAR ====== */
+#botaoVoltar {
+    background: #22c55e;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+#botaoVoltar:hover {
+    background: #16a34a;
+}
+
+/* Evita roxo no link visitado */
+#botaoVoltar:visited {
+    color: white;
+}
+
+/* ====== LISTAGEM ====== */
+#cabecalhoLivros,
+#cabecalhoRevistas {
+    color: #14532d;
+    margin-top: 40px;
+    font-size: 2.2rem;
 }
 
 ul {
@@ -69,26 +88,10 @@ li:hover {
     transform: translateX(4px);
 }
 
-#botaoVoltar {
-    display: inline-block;
-    background: #22c55e;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: background 0.3s;
-    margin-top: 10px;
-}
-
-#botaoVoltar:hover {
-    background: #16a34a;
-}
-
 #rodape {
     text-align: center;
     padding: 15px 0;
     color: #555;
- font-size: 0.85rem;
+    font-size: 0.85rem;
     margin-top: 40px;
 }
