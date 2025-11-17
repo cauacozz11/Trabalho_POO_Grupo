@@ -1,393 +1,293 @@
 
-# IMPORTAÇÕES
-import random                              # Usado para gerar números aleatórios
-from ClassesIntens import Livro, Revista   # Importa classes de itens da biblioteca
-from ClassesPessoa import Cliente  # Importa classes de pessoas
+from database import Session, Cliente, Material, Emprestimo
+from datetime import datetime, timedelta
+import sys
 
+# Função auxiliar
+def get_session():
+    return Session()
 
-# LISTAS GLOBAIS
-# Armazenam os dados cadastrados durante o uso do sistema
-clientes = []
-livros = []
-revistas = []
+# --- FUNÇÕES DE CADASTRO ---
 
-
-# DADOS PRÉ-CADASTRADOS (para testes)
-# Objetivo: deixar o sistema pronto para testes sem precisar digitar tudo
-clientes.append(Cliente("Eduardo Costa", "12345678901", "47999999999", 1))
-clientes.append(Cliente("Maria Silva", "98765432100", "47988888888", 2))
-clientes.append(Cliente("João Pereira", "11122233344", "47977777777", 3))
-clientes.append(Cliente("Ana Souza", "22233344455", "47966666666", 4))
-clientes.append(Cliente("Carlos Oliveira", "33344455566", "47955555555", 5))
-clientes.append(Cliente("Fernanda Lima", "44455566677", "47944444444", 6))
-
-
-# LIVROS
-livros.append(Livro("Aventura", "O Senhor dos Anéis", "Martins Fontes", "J.R.R. Tolkien"))
-livros.append(Livro("Terror", "It: A Coisa", "Suma", "Stephen King"))
-livros.append(Livro("Fantasia", "Harry Potter e a Pedra Filosofal", "Rocco", "J.K. Rowling"))
-livros.append(Livro("Drama", "A Culpa é das Estrelas", "Intrínseca", "John Green"))
-livros.append(Livro("Ficção Científica", "Duna", "Aleph", "Frank Herbert"))
-livros.append(Livro("Romance", "Orgulho e Preconceito", "Penguin", "Jane Austen"))
-
-
-# REVISTAS
-revistas.append(Revista("Tecnologia", "InfoTech", "Abril", 12))
-revistas.append(Revista("Ciência", "Superinteressante", "Abril", 331))
-revistas.append(Revista("Esportes", "Placar", "Abril", 45))
-revistas.append(Revista("Moda", "Vogue", "Condé Nast", 202))
-revistas.append(Revista("Negócios", "Exame", "Abril", 187))
-revistas.append(Revista("Culinária", "Prazeres da Mesa", "Editora Três", 98))
-
-
-# FUNÇÕES DE CADASTRO
 def cadastrar_livro():
-    """Permite o cadastro manual de um novo livro."""
+    session = get_session()
     while True:
         print("\n--- Cadastro de Livro ---")
-
-        # Categoria (aceita apenas letras e espaços)
+        
+        # Mantendo suas validações de input
         while True:
             categoria = input("Categoria: ")
-            if categoria.replace(" ", "").isalpha():
-                break
-            else:
-                print("A categoria deve conter apenas letras. Tente novamente.")
+            if categoria.replace(" ", "").isalpha(): break
+            else: print("A categoria deve conter apenas letras.")
+
         while True:
             titulo = input("Título: ")
-            if categoria.replace(" ", "").isalnum():
-                break
-            else:
-                print("O título deve conter apenas letras ou números. Tente novamente.")
+            if titulo.strip(): break # Simplifiquei para aceitar números também
+            else: print("Título inválido.")
         
         while True:
             editora = input("Editora: ")
-            if editora.replace(" ", "").isalnum():
-                break
-            else:
-                print("A editora conter apenas letras ou números. Tente novamente.")
+            if editora.strip(): break
+            else: print("Editora inválida.")
         
-        # Autor (aceita apenas letras e espaços)
         while True:
             autor = input("Autor: ")
-            if autor.replace(" ", "").isalpha():
-                break
-            else:
-                print("O nome do autor deve conter apenas letras. Tente novamente.")
+            if autor.replace(" ", "").isalpha(): break
+            else: print("Nome do autor inválido.")
+
+        # SALVANDO NO BANCO (Aqui mudou!)
         try:
-            novo_livro = Livro(categoria, titulo, editora, autor)
-            livros.append(novo_livro)
-            print("\nLivro cadastrado com sucesso!")
-            print(novo_livro.mostrar_informacoes())
+            novo_livro = Material(tipo="Livro", categoria=categoria, titulo=titulo, editora=editora, autor=autor)
+            session.add(novo_livro)
+            session.commit()
+            print(f"\nLivro '{titulo}' salvo no banco de dados!")
+        except Exception as e:
+            session.rollback()
+            print(f"Erro ao salvar: {e}")
 
-        except ValueError as e:
-            print("Erro ao cadastrar livro:", e)
-            continue
-
-        opc = input("\nDeseja cadastrar outro livro? (s/n): ")
-        if opc.lower() != 's':  # .lower() converte para minúsculas (aceita S ou s)
+        if input("\nDeseja cadastrar outro livro? (s/n): ").lower() != 's':
             break
+    session.close()
 
 
 def cadastrar_revista():
-    """Permite cadastrar uma nova revista."""
+    session = get_session()
     while True:
         print("\n--- Cadastro de Revista ---")
-        #categoria = input("Categoria: ")
-        #titulo = input("Título: ")
-        #editora = input("Editora: ")
         
-        while True:
-            categoria = input("Categoria: ")
-            if categoria.replace(" ", "").isalpha():
-                break
-            else:
-                print("A categoria deve conter apenas letras. Tente novamente.")
-        while True:
-            titulo = input("Título: ")
-            if titulo.replace(" ", "").isalnum():
-                break
-            else:
-                print("O título deve conter apenas letras ou números. Tente novamente.") 
-                       
-        while True:
-            editora = input("Editora: ")
-            if editora.replace(" ", "").isalnum():
-                break
-            else:
-                print("A editora deve conter apenas letras ou números. Tente novamente.")
-
+        # Seus inputs...
+        categoria = input("Categoria: ")
+        titulo = input("Título: ")
+        editora = input("Editora: ")
         
-         # Edição (deve ser um número inteiro positivo)
         try:
-            edicao = int(input("Edição (número inteiro positivo): "))
-            if edicao <= 0:
-                print("A edição deve ser maior que zero.")
-                continue
+            edicao = int(input("Edição (número): "))
         except ValueError:
-            print("Edição deve ser um número inteiro válido.")
+            print("Edição inválida.")
             continue
 
+        # SALVANDO NO BANCO
         try:
-            nova_revista = Revista(categoria, titulo, editora, edicao)
-            revistas.append(nova_revista)
-            print("\nRevista cadastrada com sucesso!")
-            print(nova_revista.mostrar_informacoes())
+            nova_revista = Material(tipo="Revista", categoria=categoria, titulo=titulo, editora=editora, edicao=edicao)
+            session.add(nova_revista)
+            session.commit()
+            print(f"\nRevista '{titulo}' salva no banco!")
+        except Exception as e:
+            session.rollback()
+            print(f"Erro: {e}")
 
-        except ValueError as e:
-            print("Erro ao cadastrar revista:", e)
-            continue
-
-
-
-        opc = input("\nDeseja cadastrar outra revista? (s/n): ")
-        if opc.lower() != 's':
+        if input("\nDeseja cadastrar outra revista? (s/n): ").lower() != 's':
             break
+    session.close()
 
 
 def cadastrar_cliente():
-    """Permite cadastrar um novo cliente no sistema."""
+    session = get_session()
     while True:
         print("\n--- Cadastro de Cliente ---")
         nome = input("Nome: ")
-        cpf = input("CPF (11 dígitos): ")
-        telefone = input("Telefone (11 dígitos, DDD + número): ")
+        cpf = input("CPF (apenas números): ")
+        telefone = input("Telefone: ")
 
-        # random.randint() → gera um ID aleatório entre 1 e 9999
-        id_cliente = random.randint(1, 9999)
+        # Verifica duplicidade no banco
+        if session.query(Cliente).filter_by(cpf=cpf).first():
+            print("Erro: CPF já cadastrado.")
+        else:
+            try:
+                # SALVANDO NO BANCO
+                novo_cliente = Cliente(nome=nome, cpf=cpf, telefone=telefone)
+                session.add(novo_cliente)
+                session.commit()
+                print(f"\nCliente {nome} cadastrado!")
+            except Exception as e:
+                session.rollback()
+                print(f"Erro: {e}")
 
-        try:
-            novo_cliente = Cliente(nome, cpf, telefone, id_cliente)
-            clientes.append(novo_cliente)
-            print("\nCliente cadastrado com sucesso!")
-            print(novo_cliente.mostrar_informacoes_cliente())
-        except ValueError as e:
-            print("Erro ao cadastrar cliente:", e)
-            continue
-
-        opc = input("\nDeseja cadastrar outro cliente? (s/n): ")
-        if opc.lower() != 's':
+        if input("\nDeseja cadastrar outro cliente? (s/n): ").lower() != 's':
             break
+    session.close()
 
 
-# FUNÇÕES DE LISTAGEM
+# --- FUNÇÕES DE LISTAGEM (Agora lendo do banco) ---
+
 def listar_clientes():
-    """Mostra todos os clientes cadastrados."""
-    print("\n" + "=" * 50)
-    print("LISTA DE CLIENTES".center(50))
-    print("=" * 50)
+    session = get_session()
+    print("\n--- LISTA DE CLIENTES (BANCO DE DADOS) ---")
+    clientes = session.query(Cliente).all()
 
-    if not clientes:  # Verifica se a lista está vazia
+    if not clientes:
         print("Nenhum cliente cadastrado.")
     else:
-        # enumerate() gera índice automático (1, 2, 3...)
         for i, c in enumerate(clientes, start=1):
-            print(f"\n[{i}] -------------------------------")
-            print(c.mostrar_informacoes_cliente())
-            print("-" * 50)
-
-    input("\nPressione ENTER para voltar ao menu...")
+            print(f"[{i}] {c.nome} | CPF: {c.cpf} | Tel: {c.telefone}")
+    
+    session.close()
+    input("\nPressione ENTER para voltar...")
 
 
 def listar_livros():
-    """Mostra todos os livros cadastrados e seus status."""
-    print("\n" + "=" * 50)
-    print("LISTA DE LIVROS".center(50))
-    print("=" * 50)
+    session = get_session()
+    print("\n--- LISTA DE LIVROS ---")
+    # Filtra apenas onde tipo é 'Livro'
+    livros = session.query(Material).filter_by(tipo="Livro").all()
 
     if not livros:
         print("Nenhum livro cadastrado.")
     else:
         for i, l in enumerate(livros, start=1):
-            print(f"\n[{i}] -------------------------------")
-            print(l.mostrar_informacoes())
-            print("-" * 50)
-    input("\nPressione ENTER para voltar ao menu...")
+            status = "Disponível" if l.disponivel else "ALUGADO"
+            print(f"[{i}] {l.titulo} (Autor: {l.autor}) - {status}")
+    
+    session.close()
+    input("\nPressione ENTER para voltar...")
 
 
 def listar_revistas():
-    """Mostra todas as revistas cadastradas e seus status."""
-    print("\n" + "=" * 50)
-    print("LISTA DE REVISTAS".center(50))
-    print("=" * 50)
+    session = get_session()
+    print("\n--- LISTA DE REVISTAS ---")
+    revistas = session.query(Material).filter_by(tipo="Revista").all()
 
     if not revistas:
         print("Nenhuma revista cadastrada.")
     else:
         for i, r in enumerate(revistas, start=1):
-            print(f"\n[{i}] -------------------------------")
-            print(r.mostrar_informacoes())
-            print("-" * 50)
-    input("\nPressione ENTER para voltar ao menu...")
+            status = "Disponível" if r.disponivel else "ALUGADO"
+            print(f"[{i}] {r.titulo} (Edição: {r.edicao}) - {status}")
+
+    session.close()
+    input("\nPressione ENTER para voltar...")
 
 
-# FUNÇÃO - ALUGAR LIVRO
-def alugar_livro():
-    """Permite escolher cliente e livro para realizar o aluguel."""
-    print("\n--- ALUGAR LIVRO ---")
+# --- FUNÇÕES DE ALUGUEL (Lógica do Banco) ---
 
-    # Mostra lista de clientes
-    for i, c in enumerate(clientes, start=1):
-        print(f"{i}. {c.nome}")
-
-    try:
-        indice_cliente = int(input("\nEscolha o número do cliente: ")) - 1
-        cliente = clientes[indice_cliente]
-    except (ValueError, IndexError):
-        # ValueError → digitou letra / símbolo
-        # IndexError → número fora do intervalo da lista
-        print("Opção inválida.")
+def alugar_item_generico(tipo_material):
+    session = get_session()
+    print(f"\n--- ALUGAR {tipo_material.upper()} ---")
+    
+    # 1. Escolher Cliente
+    clientes = session.query(Cliente).all()
+    if not clientes:
+        print("Sem clientes cadastrados.")
+        session.close()
         return
-
-    # Mostra lista de livros
-    print("\nLivros disponíveis:")
-    for i, l in enumerate(livros, start=1):
-        status = "Disponível" if l.disponivel else "Indisponível"
-        print(f"{i}. {l.titulo} - {status}")
-
-    try:
-        indice_livro = int(input("\nEscolha o número do livro: ")) - 1
-        livro = livros[indice_livro]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
-
-    if not livro.disponivel:
-        print("\nEsse livro está indisponível no momento.")
-        return
-
-    # Marca o livro como emprestado e adiciona ao cliente
-    livro.status_emprestar()
-    cliente.alugar_item(livro)
-
-    print(f"\nAluguel realizado com sucesso!")
-    print(f"Cliente: {cliente.nome}")
-    print(f"Livro: {livro.titulo}")
-
-
-# FUNÇÃO - DEVOLVER LIVRO
-def devolver_livro():
-    """Permite devolver um livro alugado."""
-    print("\n--- DEVOLVER LIVRO ---")
-
-    # Exibe lista de clientes
-    for i, c in enumerate(clientes, start=1):
-        print(f"{i}. {c.nome}")
-
-    try:
-        indice_cliente = int(input("\nEscolha o número do cliente: ")) - 1
-        cliente = clientes[indice_cliente]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
-
-    # Mostra os itens alugados pelo cliente
-    if not cliente._Cliente__itens_alugados:
-        print("Esse cliente não possui livros alugados.")
-        return
-
-    print("\nLivros alugados:")
-    for i, item in enumerate(cliente._Cliente__itens_alugados, start=1):
-        print(f"{i}. {item.titulo}")
-
-    try:
-        indice_item = int(input("\nEscolha o número do livro para devolver: ")) - 1
-        livro = cliente._Cliente__itens_alugados[indice_item]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
-
-    # Atualiza status e remove da lista do cliente
-    livro.status_devolver()
-    cliente.devolver_item(livro)
-
-    print(f"\nLivro '{livro.titulo}' devolvido com sucesso por {cliente.nome}.")
-
-
-# FUNÇÕES - REVISTAS (ALUGAR E DEVOLVER)
-def alugar_revista():
-    """Permite alugar uma revista."""
-    print("\n--- ALUGAR REVISTA ---")
 
     for i, c in enumerate(clientes, start=1):
         print(f"{i}. {c.nome}")
+    
+    try:
+        idx = int(input("Escolha o cliente: ")) - 1
+        cliente = clientes[idx]
+    except:
+        print("Opção inválida.")
+        session.close()
+        return
+
+    # 2. Escolher Material Disponível
+    materiais = session.query(Material).filter_by(tipo=tipo_material, disponivel=True).all()
+    if not materiais:
+        print(f"Nenhum(a) {tipo_material} disponível.")
+        session.close()
+        return
+
+    for i, m in enumerate(materiais, start=1):
+        print(f"{i}. {m.titulo}")
 
     try:
-        indice_cliente = int(input("\nEscolha o número do cliente: ")) - 1
-        cliente = clientes[indice_cliente]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
+        idx_mat = int(input("Escolha o item: ")) - 1
+        item = materiais[idx_mat]
+        
+        # 3. Efetivar Aluguel
+        item.disponivel = False
+        prazo = datetime.now() + timedelta(days=7)
+        emp = Emprestimo(cliente_id=cliente.id, material_id=item.id, data_prazo=prazo)
+        
+        session.add(emp)
+        session.commit()
+        print(f"\nSucesso! {item.titulo} alugado para {cliente.nome}.")
+        
+    except Exception as e:
+        print("Erro:", e)
+        session.rollback()
+    
+    session.close()
+
+def alugar_livro(): alugar_item_generico("Livro")
+def alugar_revista(): alugar_item_generico("Revista")
+
+
+# --- FUNÇÕES DE DEVOLUÇÃO ---
+
+def devolver_item_generico(tipo_material):
+    session = get_session()
+    print(f"\n--- DEVOLVER {tipo_material.upper()} ---")
+    
+    # Busca empréstimos ABERTOS desse tipo
+    emprestimos = session.query(Emprestimo).join(Material).filter(
+        Emprestimo.status == "ABERTO", 
+        Material.tipo == tipo_material
+    ).all()
+
+    if not emprestimos:
+        print("Nada para devolver.")
+        session.close()
         return
 
-    print("\nRevistas:")
-    for i, r in enumerate(revistas, start=1):
-        status = "Disponível" if r.disponivel else "Indisponível"
-        print(f"{i}. {r.titulo} - {status}")
+    for i, emp in enumerate(emprestimos, start=1):
+        print(f"{i}. {emp.material.titulo} (Com: {emp.cliente.nome})")
 
     try:
-        indice_revista = int(input("\nEscolha o número da revista: ")) - 1
-        revista = revistas[indice_revista]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
+        idx = int(input("Qual item devolver? ")) - 1
+        emp = emprestimos[idx]
+        
+        emp.data_devolucao = datetime.now()
+        emp.status = "DEVOLVIDO"
+        emp.material.disponivel = True
+        
+        session.commit()
+        print("Devolvido com sucesso!")
+    except:
+        print("Inválido.")
+    
+    session.close()
 
-    if not revista.disponivel:
-        print("\nEssa revista está indisponível no momento.")
-        return
+def devolver_livro(): devolver_item_generico("Livro")
+def devolver_revista(): devolver_item_generico("Revista")
 
-    revista.status_emprestar()
-    cliente.alugar_item(revista)
+def relatorio_emprestimos():
+    session = get_session()
+    print("\n" + "=" * 60)
+    print("RELATÓRIO DE ITENS ALUGADOS (QUEM ESTÁ COM O QUÊ)".center(60))
+    print("=" * 60)
 
-    print(f"\nAluguel realizado com sucesso!")
-    print(f"Cliente: {cliente.nome}")
-    print(f"Revista: {revista.titulo}")
+    # Busca na tabela Emprestimos tudo que está com status 'ABERTO'
+    # O SQLAlchemy já traz automaticamente o .cliente e o .material vinculados
+    emprestimos_ativos = session.query(Emprestimo).filter_by(status="ABERTO").all()
 
+    if not emprestimos_ativos:
+        print("Nenhum item está alugado no momento. Tudo na estante!")
+    else:
+        # Cabeçalho da tabela
+        print(f"{'TIPO':<10} | {'TÍTULO DO ITEM':<25} | {'CLIENTE':<20}")
+        print("-" * 60)
 
-def devolver_revista():
-    """Permite devolver uma revista."""
-    print("\n--- DEVOLVER REVISTA ---")
+        for emp in emprestimos_ativos:
+            tipo = emp.material.tipo
+            titulo = emp.material.titulo
+            nome_cliente = emp.cliente.nome
+            
+            # Formatação simples para alinhar
+            print(f"{tipo:<10} | {titulo:<25} | {nome_cliente:<20}")
+    
+    session.close()
+    input("\nPressione ENTER para voltar...")
 
-    for i, c in enumerate(clientes, start=1):
-        print(f"{i}. {c.nome}")
-
-    try:
-        indice_cliente = int(input("\nEscolha o número do cliente: ")) - 1
-        cliente = clientes[indice_cliente]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
-
-    if not cliente._Cliente__itens_alugados:
-        print("Esse cliente não possui revistas alugadas.")
-        return
-
-    print("\nRevistas alugadas:")
-    for i, item in enumerate(cliente._Cliente__itens_alugados, start=1):
-        print(f"{i}. {item.titulo}")
-
-    try:
-        indice_item = int(input("\nEscolha o número da revista para devolver: ")) - 1
-        revista = cliente._Cliente__itens_alugados[indice_item]
-    except (ValueError, IndexError):
-        print("Opção inválida.")
-        return
-
-    revista.status_devolver()
-    cliente.devolver_item(revista)
-
-    print(f"\nRevista '{revista.titulo}' devolvida com sucesso por {cliente.nome}.")
-
-
-# MENU PRINCIPAL
+# --- SEU MENU (Mantido Igual) ---
 def menu_interativo():
-    """Exibe o menu principal do sistema e gerencia as opções."""
     while True:
         try:
-            # int() converte a entrada em número inteiro
-            menu = int(input("""\n
+            print("""\n
 ---------------------------------                         
-MENU DE OPÇÕES:
-
+MENU DE OPÇÕES (BANCO CONECTADO):
 1 - Cadastrar livros
 2 - Cadastrar revistas
 3 - Cadastrar cliente
@@ -395,44 +295,33 @@ MENU DE OPÇÕES:
 5 - Alugar revistas
 6 - Devolver livros
 7 - Devolver revistas
-8 - Listar livros
-9 - Listar revistas
+8 - Listar livros (Acervo)
+9 - Listar revistas (Acervo)
 10 - Listar todos os clientes
+11 - RELATÓRIO DE ALUGUÉIS (QUEM ESTÁ COM O LIVRO)
 0 - Sair
----------------------------------
-Digite sua opção: """))
+---------------------------------""")
+            menu = int(input("Digite sua opção: "))
         except ValueError:
-            print("Digite apenas valores numéricos!")
-            continue  # Volta ao início do loop
+            print("Digite apenas números!")
+            continue
 
-        # Estrutura condicional de seleção (menu)
-        if menu == 0:
-            print("Saindo do sistema...")
-            break
-        elif menu == 1:
-            cadastrar_livro()
-        elif menu == 2:
-            cadastrar_revista()
-        elif menu == 3:
-            cadastrar_cliente()
-        elif menu == 4:
-            alugar_livro()
-        elif menu == 5:
-            alugar_revista()
-        elif menu == 6:
-            devolver_livro()
-        elif menu == 7:
-            devolver_revista()
-        elif menu == 8:
-            listar_livros()
-        elif menu == 9:
-            listar_revistas()
-        elif menu == 10:
-            listar_clientes()
-        else:
-            print("Opção inválida! Tente novamente.")
-
-
+        if menu == 0: break
+        elif menu == 1: cadastrar_livro()
+        elif menu == 2: cadastrar_revista()
+        elif menu == 3: cadastrar_cliente()
+        elif menu == 4: alugar_livro()
+        elif menu == 5: alugar_revista()
+        elif menu == 6: devolver_livro()
+        elif menu == 7: devolver_revista()
+        elif menu == 8: listar_livros()
+        elif menu == 9: listar_revistas()
+        elif menu == 10: listar_clientes()
+        elif menu == 11: relatorio_emprestimos() 
+        else: print("Opção inválida!")
 
 if __name__ == "__main__":
+    # Garante que o banco existe ao iniciar
+    from database import engine, Base
+    Base.metadata.create_all(engine)
     menu_interativo()

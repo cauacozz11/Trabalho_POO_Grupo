@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\cauac\OneDrive\Documentos\GitHub\Trabalho_POO_Grupo\venv"
+VIRTUAL_ENV="C:\Users\Leonardo Legondi\Nova pasta (2)\Trabalho_POO_Grupo\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
