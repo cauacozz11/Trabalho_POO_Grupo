@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Itens da Biblioteca</title>
+    <title>Realizar Locação - Passo 1</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='locacao.css') }}">
-</head>
+    
+    </head>
 <body id="corpo">
 
     <div class="container">
@@ -12,40 +13,44 @@
         <nav id="menu">
             <div class="menu-topo">
                 <a href="{{ url_for('main.index') }}" id="botaoVoltar">← Voltar</a>
-                <h1 id="titulo">Locação de Livros</h1>
+                <h1 id="titulo">Selecione o Item para Alugar</h1>
             </div>
         </nav>
         
-        <h2 id="cabecalhoLivros">Livros</h2>
+        <h2 id="cabecalhoLivros">Livros Disponíveis</h2>
         {% if livros %}
             <ul>
-                {% for livro in livros %}
+                {% for index, livro in livros %}
                     <li>
-                        <strong>{{ livro.titulo }}</strong> — {{ livro.autor }}
-                        <br>
-                        <small>{{ livro.categoria }} | {{ livro.editora }}</small>
+                        <a href="{{ url_for('main.locacao_selecionar_cliente', tipo_item='livro', item_index=index) }}">
+                            <strong>{{ livro.titulo }}</strong> — {{ livro.autor }}
+                            <br>
+                            <small>{{ livro.categoria }} | {{ livro.editora }}</small>
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>Nenhum livro cadastrado.</p>
+            <p>Nenhum livro disponível para locação.</p>
         {% endif %}
 
         <hr>
 
-        <h2 id="cabecalhoRevistas">Revistas</h2>
+        <h2 id="cabecalhoRevistas">Revistas Disponíveis</h2>
         {% if revistas %}
             <ul>
-                {% for revista in revistas %}
+                {% for index, revista in revistas %}
                     <li>
-                        <strong>{{ revista.titulo }}</strong> — Edição {{ revista.edicao }}
-                        <br>
-                        <small>{{ revista.categoria }} | {{ revista.editora }}</small>
+                        <a href="{{ url_for('main.locacao_selecionar_cliente', tipo_item='revista', item_index=index) }}">
+                            <strong>{{ revista.titulo }}</strong> — Edição {{ revista.edicao }}
+                            <br>
+                            <small>{{ revista.categoria }} | {{ revista.editora }}</small>
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>Nenhuma revista cadastrada.</p>
+            <p>Nenhuma revista disponível para locação.</p>
         {% endif %}
     </div>
 
