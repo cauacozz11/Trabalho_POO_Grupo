@@ -42,17 +42,16 @@
                                 <small>{{ item.categoria }} | {{ item.editora }}</small>
                             </div>
                             
-                            <form 
-                                class="form-devolver" 
-                                action="{{ url_for('main.finalizar_devolucao') }}" 
-                                method="POST"
-                                onsubmit="return confirm('Tem certeza que deseja devolver o item: {{ item.titulo }}?');"
-                            >
-                                <input type="hidden" name="cliente_id" value="{{ cliente.id_cliente }}">
-                                <input type="hidden" name="item_index" value="{{ loop.index0 }}">
-                                
-                                <button type="submit" class="botao-devolver">Devolver</button>
-                            </form>
+                                <form 
+                                    class="form-devolver" 
+                                    action="{{ url_for('main.finalizar_devolucao') }}" 
+                                    method="POST"
+                                    onsubmit="return confirm('Tem certeza que deseja devolver o item: {{ item.titulo }}?');"
+                                >
+                                    <input type="hidden" name="emprestimo_id" value="{{ item.emprestimo_id }}">
+                                    
+                                    <button type="submit" class="botao-devolver">Devolver</button>
+                                </form>
                         </li>
                     {% endfor %}
                 </ul>

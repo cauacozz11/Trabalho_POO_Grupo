@@ -20,9 +20,9 @@
         <h2 id="cabecalhoLivros">Livros Disponíveis</h2>
         {% if livros %}
             <ul>
-                {% for index, livro in livros %}
+                {% for livro in livros %} 
                     <li>
-                        <a href="{{ url_for('main.locacao_selecionar_cliente', tipo_item='livro', item_index=index) }}">
+                        <a href="{{ url_for('main.locacao_selecionar_cliente', material_id=livro.id) }}">
                             <strong>{{ livro.titulo }}</strong> — {{ livro.autor }}
                             <br>
                             <small>{{ livro.categoria }} | {{ livro.editora }}</small>

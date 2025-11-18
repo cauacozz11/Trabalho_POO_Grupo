@@ -13,11 +13,16 @@
       </nav>
     </header>
     
-    <section id="inicio">
-      <a href="/devolucao" class="botaoInicio">Realizar devoluções de Livros</a>
-      <a href="/itens" class="botaoInicio">Livros e Revistas</a>
-      <a href="/locacao" class="botaoInicio">Realize locações de livros</a>
-    </section>
+<section id="inicio">
+    
+    <a href="{{ url_for('main.formulario_cadastro', tipo='livro') }}" class="botaoInicio">Cadastrar Novo Livro</a>
+    <a href="{{ url_for('main.formulario_cadastro', tipo='cliente') }}" class="botaoInicio">Cadastrar Novo Cliente</a>
+    
+    <a href="{{ url_for('main.devolucao') }}" class="botaoInicio">Realizar devoluções</a>
+    <a href="{{ url_for('main.listar_itens') }}" class="botaoInicio">Acervo (Livros e Revistas)</a>
+    <a href="{{ url_for('main.locacao') }}" class="botaoInicio">Realizar locações</a>
+
+</section>
 
     <footer id="rodape">
       <p>Biblioteca Univille - 2025</p>
