@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from funcoes import livros, revistas, clientes
+from database import Material, Cliente, Emprestimomprestimo
 
 bp = Blueprint('main', __name__)
 
