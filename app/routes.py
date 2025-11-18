@@ -18,3 +18,4 @@ def locacao():
 @bp.route('/devolucao')
 def devolucao():
     return render_template('devolucao.html', clientes=clientes)
+

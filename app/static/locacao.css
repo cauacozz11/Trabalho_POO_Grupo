@@ -1,3 +1,157 @@
-h1 {
+/* locacao.css */
+
+/* === ESTILOS BASE (copiados de itens.css para esta página) === */
+#corpo {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7); 
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px 35px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+/* ====== MENU SUPERIOR ====== */
+#menu {
+    background-color: #14532d;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.menu-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#titulo {
+    color: white;
     text-align: center;
+    font-style: italic;
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* ====== BOTÃO DE VOLTAR ====== */
+#botaoVoltar {
+    background: #22c55e;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+#botaoVoltar:hover {
+    background: #16a34a;
+}
+
+#botaoVoltar:visited {
+    color: white;
+}
+
+/* ====== LISTAGEM ====== */
+#cabecalhoLivros,
+#cabecalhoRevistas,
+#cabecalhoClientes { /* Adicionei o #cabecalhoClientes aqui */
+    color: #14532d;
+    margin-top: 40px;
+    font-size: 2.2rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f0fdf4;
+    border-left: 6px solid #166534;
+    margin: 10px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+li:hover {
+    background: #dcfce7;
+    transform: translateX(4px);
+}
+
+#rodape {
+    text-align: center;
+    padding: 15px 0;
+    color: #555;
+    font-size: 0.85rem;
+    margin-top: 40px;
+}
+
+/* === NOVOS ESTILOS PARA CORRIGIR OS LINKS === */
+/* (Estilo dos links na página locacao.html) */
+ul li a {
+    text-decoration: none;  /* Remove o sublinhado */
+    color: inherit;         /* Herda a cor do texto (não fica azul) */
+    display: block;
+    padding: 8px 0;
+    margin: -8px 0; /* Compensa o padding para o hover ficar bom */
+}
+
+ul li a:hover {
+    color: #14532d; /* Escurece o texto no hover */
+    /* O fundo já muda pelo "li:hover" */
+}
+
+
+/* === NOVOS ESTILOS PARA O FORMULÁRIO === */
+/* (Estilos para a página locacao_selecionar_cliente.html) */
+.form-locacao {
+    padding: 25px;
+    background: #f0fdf4; /* Fundo verde claro igual o da lista */
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 6px solid #166534; /* Borda igual o da lista */
+}
+
+.form-locacao h3 {
+    margin-top: 0;
+    color: #14532d;
+}
+
+.form-locacao select, .form-locacao button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: 'Poppins', sans-serif; /* Garante a mesma fonte */
+}
+
+.form-locacao button {
+    /* Estilo do seu .botao-alugar-final */
+    background: #16a34a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+}
+
+.form-locacao button:hover {
+    /* Estilo do seu .botao-alugar-final:hover */
+    background: #14532d;
 }

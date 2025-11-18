@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Realizar Devolução</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='devolucao.css') }}">
+</head>
+<body id="corpo">
+
+    <div class="container">
+        
+        <nav id="menu">
+            <div class="menu-topo">
+                <a href="{{ url_for('main.index') }}" id="botaoVoltar">← Voltar</a>
+                <h1 id="titulo">Itens Pendentes de Devolução</h1>
+            </div>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% for cliente in clientes %}
+        
+            {% if cliente.itens_alugados %}
+            
+                <h2 id="cabecalhoClientes" style="font-size: 1.8rem; margin-top: 30px;">
+                    Cliente: {{ cliente.nome }}
+                </h2>
+
+                <ul>
+                    {% for item in cliente.itens_alugados %}
+                        <li>
+                            <div class="item-info">
+                                <strong>{{ item.titulo }}</strong>
+                                <br>
+                                <small>{{ item.categoria }} | {{ item.editora }}</small>
+                            </div>
+                            
+                            <form 
+                                class="form-devolver" 
+                                action="{{ url_for('main.finalizar_devolucao') }}" 
+                                method="POST"
+                                onsubmit="return confirm('Tem certeza que deseja devolver o item: {{ item.titulo }}?');"
+                            >
+                                <input type="hidden" name="cliente_id" value="{{ cliente.id_cliente }}">
+                                <input type="hidden" name="item_index" value="{{ loop.index0 }}">
+                                
+                                <button type="submit" class="botao-devolver">Devolver</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <hr style="margin-top: 30px;">
+
+            {% endif %}
+        
+        {% else %}
+            <h2 id="cabecalhoClientes">Nenhum cliente cadastrado.</h2>
+        {% endfor %}
+
+    </div>
+
+    <footer id="rodape">Biblioteca Univille - 2025</footer>
+</body>
+</html>

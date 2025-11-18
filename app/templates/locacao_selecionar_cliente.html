@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Realizar Locação - Passo 2</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='locacao.css') }}">
+    
+    </head>
+<body id="corpo">
+
+    <div class="container">
+        
+        <nav id="menu">
+            <div class="menu-topo">
+                <a href="{{ url_for('main.locacao') }}" id="botaoVoltar">← Voltar</a>
+                <h1 id="titulo">Selecione o Cliente</h1>
+            </div>
+        </nav>
+
+        <div class="form-locacao">
+            <h3>Item Selecionado:</h3>
+            <p><strong>{{ item.titulo }}</strong>
+               <br>
+               <small>{{ item.categoria }} | {{ item.editora }}</small>
+            </p>
+            
+            <hr>
+            
+            <form action="{{ url_for('main.finalizar_locacao') }}" method="POST">
+                
+                <input type="hidden" name="tipo_item" value="{{ tipo_item }}">
+                <input type="hidden" name="item_index" value="{{ item_index }}">
+                
+                <label for="cliente_id">Selecione o cliente para esta locação:</label>
+                
+                <select name="cliente_id" id="cliente_id" required>
+                    <option value="">-- Escolha um cliente --</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id_cliente }}">
+                            {{ cliente.nome }} (CPF: ...{{ cliente.cpf[-4:] }})
+                        </option>
+                    {% endfor %}
+                </select>
+                
+                <button type="submit">Finalizar Locação</button>
+            </form>
+        </div>
+        
+    </div>
+
+    <footer id="rodape">Biblioteca Univille - 2025</footer>
+</body>
+</html>
