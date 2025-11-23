@@ -25,42 +25,12 @@
                 </ul>
             {% endif %}
         {% endwith %}
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
 
         <form action="{{ url_for('main.processar_cadastro') }}" method="POST" class="form-cadastro">
             
-            <input type="hidden" name="tipo" value="{{ tipo }}">
+            {% if tipo == 'cliente' %}
+                <input type="hidden" name="tipo" value="cliente">
 
-            {% if tipo == 'livro' or tipo == 'revista' %}
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" required>
-                
-                <label for="categoria">Categoria:</label>
-                <input type="text" id="categoria" name="categoria" required>
-                
-                <label for="editora">Editora:</label>
-                <input type="text" id="editora" name="editora" required>
-
-                {% if tipo == 'livro' %}
-                    <label for="autor">Autor:</label>
-                    <input type="text" id="autor" name="autor">
-                {% endif %}
-                
-                {% if tipo == 'revista' %}
-                    <label for="edicao">Edição (Número):</label>
-                    <input type="number" id="edicao" name="edicao" min="1" value="1">
-                {% endif %}
-
-            {% elif tipo == 'cliente' %}
                 <label for="nome">Nome:</label>
                 <input type="text" id="nome" name="nome" required>
                 
@@ -70,13 +40,64 @@
                 <label for="telefone">Telefone:</label>
                 <input type="text" id="telefone" name="telefone">
 
+            {% else %}
+                
+                <div class="seletor-tipo">
+                    <label class="opcao-tipo">
+                        <input type="radio" name="tipo" value="livro" checked onclick="alternarTipo('livro')"> 
+                        Livro
+                    </label>
+                    <label class="opcao-tipo">
+                        <input type="radio" name="tipo" value="revista" onclick="alternarTipo('revista')"> 
+                        Revista
+                    </label>
+                </div>
+
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+                
+                <label for="categoria">Categoria:</label>
+                <input type="text" id="categoria" name="categoria" required>
+                
+                <label for="editora">Editora:</label>
+                <input type="text" id="editora" name="editora" required>
+
+                <div id="campo-autor">
+                    <label for="autor">Autor:</label>
+                    <input type="text" id="autor" name="autor">
+                </div>
+                
+                <div id="campo-edicao" class="escondido">
+                    <label for="edicao">Edição (Número):</label>
+                    <input type="number" id="edicao" name="edicao" min="1" value="1">
+                </div>
+
             {% endif %}
 
-            <button type="submit">Cadastrar {{ tipo.capitalize() }}</button>
+            <button type="submit">Finalizar Cadastro</button>
         </form>
 
     </div>
 
     <footer id="rodape">Biblioteca Univille - 2025</footer>
+
+    <script>
+        function alternarTipo(tipo) {
+            const campoAutor = document.getElementById('campo-autor');
+            const campoEdicao = document.getElementById('campo-edicao');
+
+            if (tipo === 'livro') {
+                campoAutor.classList.remove('escondido');
+                campoEdicao.classList.add('escondido');
+                // Limpa o campo edição para evitar envio de dados errados
+                document.getElementById('edicao').value = '1'; 
+            } else {
+                campoAutor.classList.add('escondido');
+                campoEdicao.classList.remove('escondido');
+                // Limpa o campo autor
+                document.getElementById('autor').value = '';
+            }
+        }
+    </script>
 </body>
 </html>

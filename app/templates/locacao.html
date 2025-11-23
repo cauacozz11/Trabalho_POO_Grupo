@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <title>Realizar Locação - Passo 1</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='locacao.css') }}">
-    
-    </head>
+</head>
 <body id="corpo">
 
     <div class="container">
@@ -39,9 +38,9 @@
         <h2 id="cabecalhoRevistas">Revistas Disponíveis</h2>
         {% if revistas %}
             <ul>
-                {% for index, revista in revistas %}
+                {% for revista in revistas %}
                     <li>
-                        <a href="{{ url_for('main.locacao_selecionar_cliente', tipo_item='revista', item_index=index) }}">
+                        <a href="{{ url_for('main.locacao_selecionar_cliente', material_id=revista.id) }}">
                             <strong>{{ revista.titulo }}</strong> — Edição {{ revista.edicao }}
                             <br>
                             <small>{{ revista.categoria }} | {{ revista.editora }}</small>

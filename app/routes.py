@@ -1,4 +1,3 @@
-# routes.py (COMPLETO E REFATORADO)
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from sqlalchemy import select
 from datetime import datetime, timedelta
@@ -22,10 +21,8 @@ def index():
 @bp.route('/itens')
 def listar_itens():
     """Lista todos os livros e revistas no acervo."""
-    # Uso do Flask-SQLAlchemy: db.session.execute(db.select(Modelo)).scalars().all()
     materiais = db.session.execute(db.select(Material)).scalars().all()
 
-    # Separa para a renderização
     livros = [m for m in materiais if m.tipo == 'Livro']
     revistas = [m for m in materiais if m.tipo == 'Revista']
 
@@ -34,31 +31,32 @@ def listar_itens():
 
 # --- Rotas de Cadastro (Novo) ---
 
-# Rota de Formulário Genérico (Livro/Revista/Cliente)
 @bp.route('/cadastro/<tipo>', methods=['GET'])
 def formulario_cadastro(tipo):
-    """Exibe o formulário de cadastro genérico (tipo pode ser: livro, revista, cliente)."""
+    """Exibe o formulário de cadastro genérico."""
     tipos_validos = ['livro', 'revista', 'cliente']
+    
     if tipo not in tipos_validos:
         return redirect(url_for('main.index'))
     
-    # Renderiza um template genérico que será criado no Passo 3
     return render_template('cadastro.html', tipo=tipo)
 
 
-# Rota de Processamento de Cadastro (POST)
 @bp.route('/cadastro/processar', methods=['POST'])
 def processar_cadastro():
+    """Processa o formulário de cadastro recebido."""
+    
     tipo = request.form.get('tipo')
     
     try:
+        # =========================================
+        # LÓGICA PARA CLIENTES
+        # =========================================
         if tipo == 'cliente':
-            # Validação simples
             if not request.form.get('cpf') or not request.form.get('nome'):
                  flash("Nome e CPF são obrigatórios!", 'error')
                  return redirect(url_for('main.formulario_cadastro', tipo='cliente'))
 
-            # Verifica duplicidade no banco (USANDO Flask-SQLAlchemy)
             cpf_existente = db.session.execute(
                 db.select(Cliente).filter_by(cpf=request.form.get('cpf'))
             ).scalar_one_or_none()
@@ -73,10 +71,13 @@ def processar_cadastro():
                 telefone=request.form.get('telefone')
             )
             db.session.add(novo_cliente)
-            flash(f"Cliente '{novo_cliente.nome}' cadastrado com sucesso!", 'success')
+            
+            # MENSAGEM DE SUCESSO REMOVIDA (Cadastro)
 
+        # =========================================
+        # LÓGICA PARA LIVROS E REVISTAS
+        # =========================================
         elif tipo in ['livro', 'revista']:
-            # Lógica para Livro e Revista
             titulo = request.form.get('titulo')
             categoria = request.form.get('categoria')
             editora = request.form.get('editora')
@@ -93,18 +94,25 @@ def processar_cadastro():
                     editora=editora,
                     autor=request.form.get('autor')
                 )
-            else: # tipo == 'revista'
+                
+            else: # Se for revista
+                edicao_val = request.form.get('edicao')
+                if not edicao_val:
+                    edicao_val = 1
+                
                 novo_material = Material(
                     tipo="Revista",
                     titulo=titulo,
                     categoria=categoria,
                     editora=editora,
-                    edicao=request.form.get('edicao', type=int)
+                    edicao=int(edicao_val)
                 )
             
             db.session.add(novo_material)
-            flash(f"{novo_material.tipo} '{novo_material.titulo}' cadastrado com sucesso!", 'success')
             
+            # MENSAGEM DE SUCESSO REMOVIDA (Cadastro)
+            
+        # Confirma a gravação no banco de dados
         db.session.commit()
 
     except Exception as e:
@@ -114,12 +122,12 @@ def processar_cadastro():
     return redirect(url_for('main.index'))
 
 
-# --- Rotas de Locação (Adaptadas) ---
+# --- Rotas de Locação ---
 
 @bp.route('/locacao')
 def locacao():
-    """Lista itens disponíveis para locação."""
-    # Adaptação para Flask-SQLAlchemy
+    """Lista itens disponíveis para locação (Passo 1)."""
+    
     materiais_disponiveis = db.session.execute(
         db.select(Material).filter_by(disponivel=True)
     ).scalars().all()
@@ -132,8 +140,8 @@ def locacao():
 
 @bp.route('/locacao/selecionar/<int:material_id>')
 def locacao_selecionar_cliente(material_id):
-    """Exibe a lista de clientes após um item ser selecionado."""
-    # Adaptação para Flask-SQLAlchemy
+    """Exibe a lista de clientes após um item ser selecionado (Passo 2)."""
+    
     item = db.session.get(Material, material_id)
     clientes = db.session.execute(db.select(Cliente)).scalars().all()
 
@@ -141,7 +149,6 @@ def locacao_selecionar_cliente(material_id):
         flash("Item não encontrado ou indisponível.", 'error')
         return redirect(url_for('main.locacao'))
         
-    # O template locacao_selecionar_cliente.html deve usar item.id para o formulário
     return render_template(
         'locacao_selecionar_cliente.html',
         item=item,
@@ -151,14 +158,12 @@ def locacao_selecionar_cliente(material_id):
 
 @bp.route('/locacao/finalizar', methods=['POST'])
 def finalizar_locacao():
-    """Efetiva o empréstimo do item para o cliente."""
+    """Efetiva o empréstimo do item para o cliente (Passo 3)."""
     
-    # O seu HTML deve enviar o 'material_id' e 'cliente_id'
     cliente_id = request.form.get('cliente_id')
     material_id = request.form.get('material_id') 
 
     try:
-        # Busca os objetos
         item = db.session.get(Material, material_id)
         cliente = db.session.get(Cliente, cliente_id)
         
@@ -166,22 +171,21 @@ def finalizar_locacao():
             flash('Erro na locação: Item não encontrado ou indisponível.', 'error')
             return redirect(url_for('main.locacao'))
 
-        # Marca o item como indisponível
         item.disponivel = False
         
-        # Cria o novo Empréstimo
         data_prazo = datetime.now() + timedelta(days=PRAZO_EMPRESTIMO_DIAS)
         novo_emprestimo = Emprestimo(
             cliente_id=cliente.id, 
             material_id=item.id, 
-            data_prazo=data_prazo, # data_prazo aqui, como no models.py
+            data_prazo=data_prazo,
             status="ABERTO"
         )
         
         db.session.add(novo_emprestimo)
         db.session.commit()
         
-        flash(f'Sucesso! "{item.titulo}" alugado para {cliente.nome}.', 'success')
+        # MENSAGEM DE SUCESSO REMOVIDA AQUI (LOCAÇÃO)
+        # flash(f'Sucesso! "{item.titulo}" alugado para {cliente.nome}.', 'success')
 
     except Exception as e:
         db.session.rollback()
@@ -190,13 +194,12 @@ def finalizar_locacao():
     return redirect(url_for('main.index'))
 
 
-# --- Rotas de Devolução (Adaptadas) ---
+# --- Rotas de Devolução ---
 
 @bp.route('/devolucao')
 def devolucao():
-    """Lista todos os clientes com itens alugados (Empréstimos ABERTOS)."""
+    """Lista todos os clientes com itens alugados."""
     
-    # 1. Busca todos os empréstimos ABERTOS. O relacionamento 'material' e 'cliente' é carregado.
     emprestimos_abertos = db.session.execute(
         db.select(Emprestimo)
           .filter_by(status="ABERTO")
@@ -204,16 +207,12 @@ def devolucao():
     ).scalars().all()
     
     clientes_com_aluguel = []
-    
-    # Dicionário para rastrear os clientes já adicionados
     clientes_map = {} 
 
     for emp in emprestimos_abertos:
         cliente_id = emp.cliente.id
         
-        # Se o cliente ainda não foi processado:
         if cliente_id not in clientes_map:
-            # Cria o objeto para ser passado ao template (usa id_cliente como esperado)
             cliente_data = {
                 'id_cliente': cliente_id,
                 'nome': emp.cliente.nome,
@@ -222,12 +221,10 @@ def devolucao():
             clientes_map[cliente_id] = cliente_data
             clientes_com_aluguel.append(cliente_data)
 
-        # Adiciona o item à lista do cliente
         clientes_map[cliente_id]['itens_alugados'].append({
             'titulo': emp.material.titulo,
             'categoria': emp.material.categoria,
             'editora': emp.material.editora,
-            # Passamos o ID do Emprestimo, que é o que precisamos para devolver
             'emprestimo_id': emp.id 
         })
     
@@ -238,27 +235,24 @@ def devolucao():
 def finalizar_devolucao():
     """Processa a devolução de um item."""
     
-    # O template devolucao.html deve enviar o 'emprestimo_id'
     emprestimo_id = request.form.get('emprestimo_id') 
     
     try:
-        # 1. Busca o objeto Emprestimo
         emprestimo = db.session.get(Emprestimo, emprestimo_id)
         
         if not emprestimo:
             flash('Erro: Empréstimo não encontrado.', 'error')
             return redirect(url_for('main.devolucao'))
             
-        # 2. Atualiza o status do Empréstimo
         emprestimo.data_devolucao = datetime.now()
         emprestimo.status = "DEVOLVIDO"
         
-        # 3. Atualiza a disponibilidade do Material (via relacionamento)
-        # Assumimos que o relacionamento material está carregado.
         emprestimo.material.disponivel = True
         
         db.session.commit()
-        flash(f'Devolvido com sucesso: "{emprestimo.material.titulo}".', 'success')
+        
+        # MENSAGEM DE SUCESSO REMOVIDA AQUI (DEVOLUÇÃO)
+        # flash(f'Devolvido com sucesso: "{emprestimo.material.titulo}".', 'success')
 
     except Exception as e:
         db.session.rollback()
