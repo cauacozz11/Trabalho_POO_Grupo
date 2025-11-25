@@ -136,6 +136,7 @@ nav#menu {
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
     background-color: #f8fafc;
+    color: black;
 }
 
 /* Efeito ao clicar no campo */
@@ -144,6 +145,7 @@ nav#menu {
     background-color: #fff;
     outline: none;
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    
 }
 
 /* =========================================
@@ -184,8 +186,6 @@ nav#menu {
     font-size: 0.85rem;
     margin-top: auto;
 }
-
-
 
 
 .opcao-tipo {
